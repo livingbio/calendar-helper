@@ -7,7 +7,7 @@ import oauth2client
 from oauth2client import client
 from oauth2client import tools
 import dateutil.parser
-from collections import Counter
+from collections import Counter, defaultdict
 
 flags = None
 # try:
@@ -81,6 +81,7 @@ def main(year, month):
         print('No upcoming events found.')
 
     counter = Counter()
+    detail = defaultdict(list)
 
     for event in events:
         start = dateutil.parser.parse(event['start'].get('dateTime', event['start'].get('date')))
@@ -94,9 +95,15 @@ def main(year, month):
 
         # print(event['summary'], '\t', correction)
         counter[event['summary']] += correction
+        detail[event['summary']].append("%s ~ %s:%s" % (start.strftime('%Y-%m-%d %H:%M'), end.strftime("%Y-%m-%d %H:%M"), correction))
 
     for v in counter:
         print(v, '\t', counter[v])
+
+    for v in detail:
+        print(v, '\t', counter[v])
+        for i in detail[v]:
+            print(i)
 
 if __name__ == '__main__':
     import clime; clime.start(debug=True)
